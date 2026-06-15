@@ -3,7 +3,7 @@
  * Centralized REST API calls to the backend.
  */
 
-const API_URL = import.meta.env.VITE_API_URL || "https://artha-dashboard.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "https://artha-dashboard-5vac.onrender.com";
 
 /**
  * Login with email. Creates user if new.
