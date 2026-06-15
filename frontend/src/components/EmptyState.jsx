@@ -1,33 +1,23 @@
 import React from "react";
 
-/**
- * EmptyState — shown when user has no subscribed stocks.
- */
+// Simple chart-line SVG icon
+const EmptyIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--text-3)" }}>
+    <line x1="18" y1="20" x2="18" y2="10"/>
+    <line x1="12" y1="20" x2="12" y2="4"/>
+    <line x1="6" y1="20" x2="6" y2="14"/>
+  </svg>
+);
+
 export default function EmptyState() {
   return (
-    <div className="empty-state" role="status" aria-label="No stocks subscribed">
-      <div className="empty-state-icon" aria-hidden="true">📭</div>
-      <h3>No stocks in your watchlist yet</h3>
-      <p>
-        Subscribe to a stock using the <strong style={{ color: "var(--color-accent)" }}>Watchlist</strong> panel on the left to start receiving live price updates every second.
-      </p>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center", marginTop: 8 }}>
-        {["GOOG", "TSLA", "AMZN", "META", "NVDA"].map((ticker) => (
-          <span
-            key={ticker}
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.75rem",
-              fontWeight: 700,
-              padding: "3px 10px",
-              borderRadius: 6,
-              background: "rgba(61, 126, 255, 0.08)",
-              border: "1px solid rgba(61, 126, 255, 0.15)",
-              color: "var(--color-accent)",
-            }}
-          >
-            {ticker}
-          </span>
+    <div className="empty-state" role="status">
+      <div className="empty-state-icon"><EmptyIcon /></div>
+      <h3>No stocks in your watchlist</h3>
+      <p>Add a stock from the Watchlist panel on the left to start receiving live price updates.</p>
+      <div className="empty-tickers">
+        {["GOOG", "TSLA", "AMZN", "META", "NVDA"].map((t) => (
+          <span key={t} className="empty-ticker-tag">{t}</span>
         ))}
       </div>
     </div>

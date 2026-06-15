@@ -1,17 +1,14 @@
 import React from "react";
 
-/**
- * StockSelector — shows all 5 supported stocks with subscribe/unsubscribe buttons.
- */
 export default function StockSelector({ stocks, subscriptions, loadingTicker, onSubscribe, onUnsubscribe }) {
   return (
-    <section className="glass-card stock-selector" aria-label="Stock Watchlist Selector">
-      <div className="stock-selector-header">
-        <h3>Watchlist</h3>
-        <span className="badge badge-blue">{subscriptions.length} / 5</span>
+    <section className="card selector-card" aria-label="Stock Watchlist">
+      <div className="selector-header">
+        <div className="section-title" style={{ marginBottom: 0 }}>Watchlist</div>
+        <span className="badge badge-gray mono">{subscriptions.length} / 5</span>
       </div>
 
-      <div className="stock-selector-list" role="list">
+      <div role="list">
         {stocks.map((stock) => {
           const isSubscribed = subscriptions.includes(stock.ticker);
           const isLoading = loadingTicker === stock.ticker;
@@ -19,37 +16,35 @@ export default function StockSelector({ stocks, subscriptions, loadingTicker, on
           return (
             <div
               key={stock.ticker}
-              className={`stock-selector-item${isSubscribed ? " subscribed" : ""}`}
+              className={`stock-row${isSubscribed ? " active" : ""}`}
               role="listitem"
               id={`stock-row-${stock.ticker}`}
             >
-              <div className="stock-info">
-                <div className="stock-ticker-badge">{stock.ticker}</div>
-                <div className="stock-name">{stock.name}</div>
-                <div className="stock-sector">{stock.sector}</div>
+              <div className="stock-row-info">
+                <div className="stock-row-ticker">{stock.ticker}</div>
+                <div className="stock-row-name">{stock.name}</div>
+                <div className="stock-row-sector">{stock.sector}</div>
               </div>
 
               {isSubscribed ? (
                 <button
                   id={`unsubscribe-btn-${stock.ticker}`}
-                  className="btn btn-danger subscribe-btn"
+                  className="btn btn-danger row-btn"
                   onClick={() => onUnsubscribe(stock.ticker)}
                   disabled={isLoading}
-                  title={`Unsubscribe from ${stock.ticker}`}
-                  aria-label={`Remove ${stock.ticker} from watchlist`}
+                  aria-label={`Remove ${stock.ticker}`}
                 >
-                  {isLoading ? <span className="spinner" /> : "✕ Remove"}
+                  {isLoading ? <span className="spinner" /> : "Remove"}
                 </button>
               ) : (
                 <button
                   id={`subscribe-btn-${stock.ticker}`}
-                  className="btn btn-success subscribe-btn"
+                  className="btn btn-success row-btn"
                   onClick={() => onSubscribe(stock.ticker)}
                   disabled={isLoading}
-                  title={`Subscribe to ${stock.ticker}`}
-                  aria-label={`Add ${stock.ticker} to watchlist`}
+                  aria-label={`Watch ${stock.ticker}`}
                 >
-                  {isLoading ? <span className="spinner" /> : "+ Watch"}
+                  {isLoading ? <span className="spinner" /> : "Watch"}
                 </button>
               )}
             </div>

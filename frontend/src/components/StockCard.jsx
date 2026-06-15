@@ -3,30 +3,25 @@ import MiniChart from "./MiniChart.jsx";
 import { formatPrice, formatChange, formatPercent, formatTimestamp } from "../utils/formatters.js";
 import { getPriceHistory } from "../utils/priceHistory.js";
 
-/**
- * StockCard — displays live data for a single subscribed stock.
- * Flashes green/red on price change.
- */
 export default function StockCard({ priceData, onUnsubscribe, unsubscribeLoading }) {
   const [flashClass, setFlashClass] = useState("");
   const prevPriceRef = useRef(priceData?.price);
   const [chartData, setChartData] = useState(() => getPriceHistory(priceData?.ticker));
 
-  // Flash animation on price update
+  // Flash animation on price change
   useEffect(() => {
     if (!priceData) return;
     if (prevPriceRef.current !== priceData.price) {
       const dir = priceData.direction;
-      if (dir === "up") setFlashClass("flash-up");
+      if (dir === "up")   setFlashClass("flash-up");
       else if (dir === "down") setFlashClass("flash-down");
       prevPriceRef.current = priceData.price;
-
-      const t = setTimeout(() => setFlashClass(""), 450);
+      const t = setTimeout(() => setFlashClass(""), 380);
       return () => clearTimeout(t);
     }
   }, [priceData?.price]);
 
-  // Update chart data when history changes
+  // Sync chart data
   useEffect(() => {
     if (priceData?.ticker) {
       setChartData([...getPriceHistory(priceData.ticker)]);
@@ -37,55 +32,51 @@ export default function StockCard({ priceData, onUnsubscribe, unsubscribeLoading
 
   const { ticker, name, sector, price, change, changePercent, direction, timestamp } = priceData;
 
-  const changeArrow = direction === "up" ? "↑" : direction === "down" ? "↓" : "→";
-  const priceColorClass = direction === "up" ? "up" : direction === "down" ? "down" : "";
+  const dirClass = direction === "up" ? "up" : direction === "down" ? "down" : "flat";
+  const arrow = direction === "up" ? "+" : direction === "down" ? "-" : "";
 
   return (
     <article
       id={`stock-card-${ticker}`}
-      className={`stock-card glass-card ${direction || "flat"} ${flashClass} fade-in-up`}
-      aria-label={`${ticker} stock card`}
+      className={`stock-card ${dirClass} ${flashClass} fade-up`}
+      aria-label={`${ticker} live price card`}
     >
-      {/* Card header */}
-      <div className="stock-card-header">
+      {/* Header row */}
+      <div className="card-header">
         <div>
-          <div className="stock-card-ticker">{ticker}</div>
-          <div className="stock-card-name">{name}</div>
+          <div className="card-ticker">{ticker}</div>
+          <div className="card-name">{name}</div>
         </div>
-        <span className="stock-card-sector-badge">{sector}</span>
+        <span className="card-sector">{sector}</span>
       </div>
 
-      {/* Price row */}
-      <div className="stock-card-price-row">
-        <span className={`stock-card-price text-mono ${priceColorClass}`}>
-          {formatPrice(price)}
-        </span>
-        <div className={`stock-card-change ${direction || "flat"}`}>
-          <span className="change-arrow" aria-hidden="true">{changeArrow}</span>
-          <span>{formatChange(change)}</span>
-          <span>({formatPercent(changePercent)})</span>
-        </div>
+      {/* Live chart */}
+      <MiniChart data={chartData} direction={direction} />
+
+      {/* Price */}
+      <div className={`card-price mono ${dirClass}`}>{formatPrice(price)}</div>
+
+      {/* Change */}
+      <div className={`card-change mono ${dirClass}`}>
+        <span>{arrow}{Math.abs(change).toFixed(2)}</span>
+        <span>({arrow}{Math.abs(changePercent).toFixed(2)}%)</span>
       </div>
 
-      {/* Meta row */}
-      <div className="stock-card-meta">
-        <span className="stock-card-timestamp" title="Last updated">
-          ⏱ {formatTimestamp(timestamp)}
-        </span>
+      {/* Footer */}
+      <div className="card-footer">
+        <span className="card-time">{formatTimestamp(timestamp)}</span>
         <button
-          id={`card-unsubscribe-btn-${ticker}`}
-          className="btn btn-danger stock-card-unsubscribe"
+          id={`card-remove-${ticker}`}
+          className="btn btn-danger card-remove"
           onClick={() => onUnsubscribe(ticker)}
           disabled={unsubscribeLoading}
-          title={`Remove ${ticker} from watchlist`}
-          aria-label={`Unsubscribe from ${ticker}`}
+          aria-label={`Remove ${ticker}`}
         >
-          {unsubscribeLoading ? <span className="spinner" style={{ width: 12, height: 12 }} /> : "✕ Remove"}
+          {unsubscribeLoading
+            ? <span className="spinner" style={{ width: 12, height: 12 }} />
+            : "Remove"}
         </button>
       </div>
-
-      {/* Live mini chart */}
-      <MiniChart data={chartData} direction={direction} />
     </article>
   );
 }

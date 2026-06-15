@@ -1,45 +1,21 @@
 import React from "react";
 
-/**
- * ConnectionBadge — shows current Socket.IO connection status.
- * status: "connected" | "connecting" | "disconnected"
- */
 export default function ConnectionBadge({ status }) {
   const config = {
-    connected: {
-      label: "Live",
-      dotClass: "green",
-      badgeClass: "connected",
-      title: "Socket.IO connected — receiving live updates",
-    },
-    connecting: {
-      label: "Connecting",
-      dotClass: "yellow",
-      badgeClass: "connecting",
-      title: "Establishing connection to the server…",
-    },
-    disconnected: {
-      label: "Offline",
-      dotClass: "red",
-      badgeClass: "disconnected",
-      title: "Disconnected from server — trying to reconnect",
-    },
-  }[status] || {
-    label: "Unknown",
-    dotClass: "red",
-    badgeClass: "disconnected",
-    title: "Unknown connection state",
-  };
+    connected:    { label: "Live",         dotClass: "dot-green",  badgeClass: "connected" },
+    connecting:   { label: "Connecting",   dotClass: "dot-yellow", badgeClass: "connecting" },
+    disconnected: { label: "Disconnected", dotClass: "dot-red",    badgeClass: "disconnected" },
+  }[status] || { label: "Offline", dotClass: "dot-red", badgeClass: "disconnected" };
 
   return (
     <div
       id="connection-badge"
-      className={`connection-badge ${config.badgeClass}`}
-      title={config.title}
+      className={`conn-badge ${config.badgeClass}`}
+      title={`Socket.IO: ${status}`}
       role="status"
       aria-live="polite"
     >
-      <span className={`pulse-dot ${config.dotClass}`} aria-hidden="true" />
+      <span className={`dot ${config.dotClass}`} aria-hidden="true" />
       {config.label}
     </div>
   );
