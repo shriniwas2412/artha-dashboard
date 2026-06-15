@@ -1,1 +1,10 @@
-{"users": []}
+{
+  "users": [
+    {
+      "email": "user1@example.com",
+      "subscriptions": [
+        "GOOG"
+      ]
+    }
+  ]
+}

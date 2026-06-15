@@ -10,7 +10,13 @@ import { fetchStocks, fetchSubscriptions, subscribeToStock, unsubscribeFromStock
 import { getSocket, connectSocket, disconnectSocket } from "../socket.js";
 import { addPricePoint, seedPriceHistory, clearPriceHistory } from "../utils/priceHistory.js";
 
-export default function Dashboard({ user, onLogout, addToast, theme, onToggleTheme, onOpenTutorial }) {
+const InfoIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+  </svg>
+);
+
+export default function Dashboard({ user, onLogout, addToast, theme, onToggleTheme, onOpenTutorial, currentTab, setCurrentTab }) {
   const [stocks, setStocks] = useState([]);
   const [subscriptions, setSubscriptions] = useState([]);
   const [livePrices, setLivePrices] = useState({});
@@ -146,36 +152,58 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
         theme={theme}
         onToggleTheme={onToggleTheme}
         onOpenTutorial={onOpenTutorial}
+        currentTab={currentTab}
+        setCurrentTab={setCurrentTab}
       />
 
-      {/* Scrolling market ticker */}
-      {stocks.length > 0 && <TickerStrip stocks={stocks} />}
-
-      <main className="dashboard" role="main">
-        {/* Disclaimer */}
-        <div className="disclaimer">
-          <strong>Simulated data only.</strong> All prices are generated algorithmically for demonstration purposes. This is not real market data.
-        </div>
-
-        {/* Main grid */}
-        <div className="dash-grid">
-          {/* Left column */}
-          <div className="left-col">
-            <MarketOverview
-              stocks={stocks}
-              subscriptionCount={subscriptions.length}
-              connectionStatus={connectionStatus}
-            />
-            <StockSelector
-              stocks={stocks}
-              subscriptions={subscriptions}
-              loadingTicker={loadingTicker}
-              onSubscribe={handleSubscribe}
-              onUnsubscribe={handleUnsubscribe}
-            />
+      {currentTab === "portfolio" ? (
+        <main className="dashboard" role="main">
+          <div className="cards-header">
+            <span className="section-title">Your Portfolio (Mock)</span>
           </div>
+          <div className="empty-state">
+            <h3>Portfolio features coming soon</h3>
+            <p>This section will allow you to execute trades and manage your holdings.</p>
+          </div>
+        </main>
+      ) : (
+        <>
+          {/* Scrolling market ticker */}
+          {stocks.length > 0 && <TickerStrip stocks={stocks} />}
 
-          {/* Right column — live cards */}
+          <main className="dashboard" role="main">
+            {/* Disclaimer */}
+            <div className="disclaimer">
+              <strong>Simulated data only.</strong> All prices are generated algorithmically for demonstration purposes. This is not real market data.
+            </div>
+
+            {/* Main grid */}
+            <div className="dash-grid">
+              {/* Left column */}
+              <div className="left-col">
+                <MarketOverview
+                  stocks={stocks}
+                  subscriptionCount={subscriptions.length}
+                  connectionStatus={connectionStatus}
+                />
+                <StockSelector
+                  stocks={stocks}
+                  subscriptions={subscriptions}
+                  loadingTicker={loadingTicker}
+                  onSubscribe={handleSubscribe}
+                  onUnsubscribe={handleUnsubscribe}
+                />
+                <div className="artha-meaning-card fade-up">
+                  <div className="artha-meaning-title"><InfoIcon /> Meaning of Artha</div>
+                  <div className="artha-meaning-text">
+                    <strong>अर्थ (artha)</strong> is one of the four aims of human life in Indian philosophy. It implies wealth, purpose, and prosperity. 
+                    <br/><br/>
+                    Markets aren't just numbers; they represent human endeavor and the pursuit of meaning. Use this dashboard to discover the true mathematics of markets!
+                  </div>
+                </div>
+              </div>
+
+              {/* Right column — live cards */}
           <div>
             <div className="cards-header">
               <span className="section-title">Live Watchlist</span>
@@ -224,6 +252,8 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
         {/* Newsletter */}
         <Newsletter />
       </main>
+      </>
+      )}
     </>
   );
 }

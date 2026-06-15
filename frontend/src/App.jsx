@@ -3,9 +3,11 @@ import Login from "./components/Login.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import Tutorial from "./components/Tutorial.jsx";
 import Toast from "./components/Toast.jsx";
+import Chatbot from "./components/Chatbot.jsx";
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [currentTab, setCurrentTab] = useState("dashboard");
   const [toasts, setToasts] = useState([]);
   const [showTutorial, setShowTutorial] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem("artha_theme") || "dark");
@@ -72,14 +74,17 @@ export default function App() {
           theme={theme}
           onToggleTheme={toggleTheme}
           onOpenTutorial={openTutorial}
+          currentTab={currentTab}
+          setCurrentTab={setCurrentTab}
         />
       )}
 
-      {/* Tutorial modal — rendered above everything */}
       {showTutorial && (
         <Tutorial onClose={closeTutorial} onSkip={closeTutorial} />
       )}
 
+      {user && <Chatbot />}
+      
       <Toast toasts={toasts} onRemove={removeToast} />
     </>
   );

@@ -27,16 +27,25 @@ const HelpIcon = () => (
   </svg>
 );
 
-export default function Header({ user, connectionStatus, onLogout, theme, onToggleTheme, onOpenTutorial }) {
+export default function Header({ user, connectionStatus, onLogout, theme, onToggleTheme, onOpenTutorial, currentTab, setCurrentTab }) {
   const avatarLetter = user?.email ? user.email[0].toUpperCase() : "U";
   return (
     <header className="header" role="banner">
-      <div className="header-brand">
-        <div className="header-mark"><ChartLineIcon /></div>
-        <div>
-          <div className="header-name">Artha</div>
-          <div className="header-sub">The Mathematics of Markets</div>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div className="header-brand">
+          <div className="header-mark"><ChartLineIcon /></div>
+          <div>
+            <div className="header-name">Artha</div>
+            <div className="header-sub">The Mathematics of Markets</div>
+          </div>
         </div>
+
+        {user && (
+          <nav className="nav-links">
+            <button className={`nav-link ${currentTab === "dashboard" ? "active" : ""}`} onClick={() => setCurrentTab("dashboard")}>Dashboard</button>
+            <button className={`nav-link ${currentTab === "portfolio" ? "active" : ""}`} onClick={() => setCurrentTab("portfolio")}>Portfolio</button>
+          </nav>
+        )}
       </div>
 
       <div className="header-right">

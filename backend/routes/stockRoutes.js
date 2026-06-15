@@ -23,6 +23,7 @@ router.get("/", (req, res) => {
         exchange: stock.exchange,
         currency: stock.currency,
         flag: stock.flag,
+        volatility: stock.volatility,
         basePrice: stock.basePrice,
         currentPrice: priceData ? priceData.price : stock.basePrice,
       };
