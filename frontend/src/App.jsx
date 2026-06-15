@@ -1,64 +1,69 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Login from "./components/Login.jsx";
 import Dashboard from "./components/Dashboard.jsx";
+import Tutorial from "./components/Tutorial.jsx";
 import Toast from "./components/Toast.jsx";
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [toasts, setToasts] = useState([]);
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("pulsetrade_theme") || "dark";
-  });
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem("artha_theme") || "dark");
 
-  // Apply theme to <html> element
+  // Apply theme attribute to <html>
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("pulsetrade_theme", theme);
+    localStorage.setItem("artha_theme", theme);
   }, [theme]);
 
-  // Restore session from localStorage on mount
+  // Restore session
   useEffect(() => {
-    const savedEmail = localStorage.getItem("pulsetrade_email");
-    if (savedEmail) {
-      setUser({ email: savedEmail });
-    }
+    const saved = localStorage.getItem("artha_email");
+    if (saved) setUser({ email: saved });
   }, []);
 
-  const toggleTheme = useCallback(() => {
-    setTheme((t) => (t === "dark" ? "light" : "dark"));
-  }, []);
+  const toggleTheme = useCallback(() => setTheme((t) => (t === "dark" ? "light" : "dark")), []);
 
   const addToast = useCallback((type, title, message, duration = 4000) => {
     const id = `toast-${Date.now()}-${Math.random()}`;
     setToasts((prev) => [...prev, { id, type, title, message }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, duration);
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), duration);
   }, []);
 
-  const removeToast = useCallback((id) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  }, []);
+  const removeToast = useCallback((id) => setToasts((prev) => prev.filter((t) => t.id !== id)), []);
 
-  const handleLogin = useCallback(
-    (loggedInUser) => {
-      localStorage.setItem("pulsetrade_email", loggedInUser.email);
-      setUser(loggedInUser);
-      addToast("success", "Signed in", `Welcome, ${loggedInUser.email}`);
-    },
-    [addToast]
-  );
+  const handleLogin = useCallback((loggedInUser) => {
+    localStorage.setItem("artha_email", loggedInUser.email);
+    setUser(loggedInUser);
+    addToast("success", "Signed in", `Welcome, ${loggedInUser.email}`);
+    // Show tutorial only on first login
+    if (!localStorage.getItem("artha_tutorial_done")) {
+      setShowTutorial(true);
+    }
+  }, [addToast]);
 
   const handleLogout = useCallback(() => {
-    localStorage.removeItem("pulsetrade_email");
+    localStorage.removeItem("artha_email");
     setUser(null);
-    addToast("info", "Signed out", "Your session has been cleared.");
+    addToast("info", "Signed out", "Session cleared.");
   }, [addToast]);
+
+  const closeTutorial = useCallback(() => {
+    localStorage.setItem("artha_tutorial_done", "1");
+    setShowTutorial(false);
+  }, []);
+
+  const openTutorial = useCallback(() => setShowTutorial(true), []);
 
   return (
     <>
       {!user ? (
-        <Login onLogin={handleLogin} addToast={addToast} theme={theme} onToggleTheme={toggleTheme} />
+        <Login
+          onLogin={handleLogin}
+          addToast={addToast}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
       ) : (
         <Dashboard
           user={user}
@@ -66,8 +71,15 @@ export default function App() {
           addToast={addToast}
           theme={theme}
           onToggleTheme={toggleTheme}
+          onOpenTutorial={openTutorial}
         />
       )}
+
+      {/* Tutorial modal — rendered above everything */}
+      {showTutorial && (
+        <Tutorial onClose={closeTutorial} onSkip={closeTutorial} />
+      )}
+
       <Toast toasts={toasts} onRemove={removeToast} />
     </>
   );

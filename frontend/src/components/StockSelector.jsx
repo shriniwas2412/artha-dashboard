@@ -1,29 +1,57 @@
-import React from "react";
+import React, { useState } from "react";
 
 export default function StockSelector({ stocks, subscriptions, loadingTicker, onSubscribe, onUnsubscribe }) {
+  const [filter, setFilter] = useState("all"); // "all" | "US" | "IN"
+
+  const filtered = stocks.filter((s) => {
+    if (filter === "US") return s.flag === "US";
+    if (filter === "IN") return s.flag === "IN";
+    return true;
+  });
+
   return (
     <section className="card selector-card" aria-label="Stock Watchlist">
       <div className="selector-header">
-        <div className="section-title" style={{ marginBottom: 0 }}>Watchlist</div>
-        <span className="badge badge-gray mono">{subscriptions.length} / 5</span>
+        <span className="section-title">Watchlist</span>
+        <span id="watchlist-count" className="badge badge-gray mono">{subscriptions.length}/{stocks.length}</span>
+      </div>
+
+      {/* Exchange filter tabs */}
+      <div className="exch-tabs" role="tablist">
+        {[["all", "All"], ["US", "US"], ["IN", "India"]].map(([key, label]) => (
+          <button
+            key={key}
+            role="tab"
+            aria-selected={filter === key}
+            className={`exch-tab${filter === key ? " active" : ""}`}
+            onClick={() => setFilter(key)}
+            id={`tab-${key}`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       <div role="list">
-        {stocks.map((stock) => {
+        {filtered.map((stock) => {
           const isSubscribed = subscriptions.includes(stock.ticker);
           const isLoading = loadingTicker === stock.ticker;
+          const exchClass = stock.exchange === "NASDAQ" ? "exch-nasdaq" : "exch-nse";
 
           return (
             <div
               key={stock.ticker}
+              id={`stock-row-${stock.ticker}`}
               className={`stock-row${isSubscribed ? " active" : ""}`}
               role="listitem"
-              id={`stock-row-${stock.ticker}`}
             >
-              <div className="stock-row-info">
-                <div className="stock-row-ticker">{stock.ticker}</div>
-                <div className="stock-row-name">{stock.name}</div>
-                <div className="stock-row-sector">{stock.sector}</div>
+              <div className="row-info">
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span className="row-ticker">{stock.ticker}</span>
+                  <span className={exchClass}>{stock.exchange}</span>
+                </div>
+                <div className="row-name">{stock.name}</div>
+                <div className="row-sector">{stock.currency === "INR" ? "₹ INR" : "$ USD"} · {stock.sector}</div>
               </div>
 
               {isSubscribed ? (
@@ -32,9 +60,8 @@ export default function StockSelector({ stocks, subscriptions, loadingTicker, on
                   className="btn btn-danger row-btn"
                   onClick={() => onUnsubscribe(stock.ticker)}
                   disabled={isLoading}
-                  aria-label={`Remove ${stock.ticker}`}
                 >
-                  {isLoading ? <span className="spinner" /> : "Remove"}
+                  {isLoading ? <span className="spinner" style={{ width: 10, height: 10 }} /> : "Remove"}
                 </button>
               ) : (
                 <button
@@ -42,9 +69,8 @@ export default function StockSelector({ stocks, subscriptions, loadingTicker, on
                   className="btn btn-success row-btn"
                   onClick={() => onSubscribe(stock.ticker)}
                   disabled={isLoading}
-                  aria-label={`Watch ${stock.ticker}`}
                 >
-                  {isLoading ? <span className="spinner" /> : "Watch"}
+                  {isLoading ? <span className="spinner" style={{ width: 10, height: 10 }} /> : "Watch"}
                 </button>
               )}
             </div>

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import MiniChart from "./MiniChart.jsx";
-import { formatPrice, formatChange, formatPercent, formatTimestamp } from "../utils/formatters.js";
+import { formatPrice, formatTimestamp } from "../utils/formatters.js";
 import { getPriceHistory } from "../utils/priceHistory.js";
 
 export default function StockCard({ priceData, onUnsubscribe, unsubscribeLoading }) {
@@ -8,58 +8,82 @@ export default function StockCard({ priceData, onUnsubscribe, unsubscribeLoading
   const prevPriceRef = useRef(priceData?.price);
   const [chartData, setChartData] = useState(() => getPriceHistory(priceData?.ticker));
 
-  // Flash animation on price change
   useEffect(() => {
     if (!priceData) return;
-    if (prevPriceRef.current !== priceData.price) {
+    if (prevPriceRef.current !== undefined && prevPriceRef.current !== priceData.price) {
       const dir = priceData.direction;
-      if (dir === "up")   setFlashClass("flash-up");
+      if (dir === "up") setFlashClass("flash-up");
       else if (dir === "down") setFlashClass("flash-down");
       prevPriceRef.current = priceData.price;
-      const t = setTimeout(() => setFlashClass(""), 380);
+      const t = setTimeout(() => setFlashClass(""), 350);
       return () => clearTimeout(t);
     }
+    prevPriceRef.current = priceData.price;
   }, [priceData?.price]);
 
-  // Sync chart data
   useEffect(() => {
-    if (priceData?.ticker) {
-      setChartData([...getPriceHistory(priceData.ticker)]);
-    }
+    if (priceData?.ticker) setChartData([...getPriceHistory(priceData.ticker)]);
   }, [priceData?.price, priceData?.ticker]);
 
   if (!priceData) return null;
 
-  const { ticker, name, sector, price, change, changePercent, direction, timestamp } = priceData;
-
+  const { ticker, name, sector, price, change, changePercent, direction, timestamp, currency, exchange } = priceData;
   const dirClass = direction === "up" ? "up" : direction === "down" ? "down" : "flat";
-  const arrow = direction === "up" ? "+" : direction === "down" ? "-" : "";
+  const sign = direction === "up" ? "+" : direction === "down" ? "-" : "";
+
+  // Session high/low/avg from price history
+  const prices = chartData.map((d) => d.price);
+  const sessionHigh = prices.length ? Math.max(...prices) : price;
+  const sessionLow  = prices.length ? Math.min(...prices) : price;
+  const sessionAvg  = prices.length ? prices.reduce((a, b) => a + b, 0) / prices.length : price;
+
+  const cur = currency || "USD";
+  const exchClass = (exchange || "NASDAQ") === "NASDAQ" ? "exch-nasdaq" : "exch-nse";
 
   return (
     <article
       id={`stock-card-${ticker}`}
       className={`stock-card ${dirClass} ${flashClass} fade-up`}
-      aria-label={`${ticker} live price card`}
+      aria-label={`${ticker} live price`}
     >
-      {/* Header row */}
-      <div className="card-header">
+      {/* Top row */}
+      <div className="card-top">
         <div>
           <div className="card-ticker">{ticker}</div>
           <div className="card-name">{name}</div>
         </div>
-        <span className="card-sector">{sector}</span>
+        <div className="card-badges">
+          <span className={exchClass}>{exchange || "NASDAQ"}</span>
+          <span className="badge badge-gray" style={{ fontSize: "0.6rem" }}>{sector}</span>
+        </div>
       </div>
 
-      {/* Live chart */}
+      {/* Mini chart */}
       <MiniChart data={chartData} direction={direction} />
 
       {/* Price */}
-      <div className={`card-price mono ${dirClass}`}>{formatPrice(price)}</div>
+      <div className={`card-price mono ${dirClass}`}>{formatPrice(price, cur)}</div>
 
       {/* Change */}
       <div className={`card-change mono ${dirClass}`}>
-        <span>{arrow}{Math.abs(change).toFixed(2)}</span>
-        <span>({arrow}{Math.abs(changePercent).toFixed(2)}%)</span>
+        <span>{sign}{Math.abs(change ?? 0).toFixed(2)}</span>
+        <span>({sign}{Math.abs(changePercent ?? 0).toFixed(2)}%)</span>
+      </div>
+
+      {/* Session stats */}
+      <div className="session-row">
+        <div className="session-item">
+          <div className="session-lbl">High</div>
+          <div className="session-val mono green">{formatPrice(sessionHigh, cur)}</div>
+        </div>
+        <div className="session-item">
+          <div className="session-lbl">Low</div>
+          <div className="session-val mono red">{formatPrice(sessionLow, cur)}</div>
+        </div>
+        <div className="session-item">
+          <div className="session-lbl">Avg</div>
+          <div className="session-val mono">{formatPrice(sessionAvg, cur)}</div>
+        </div>
       </div>
 
       {/* Footer */}
@@ -67,14 +91,11 @@ export default function StockCard({ priceData, onUnsubscribe, unsubscribeLoading
         <span className="card-time">{formatTimestamp(timestamp)}</span>
         <button
           id={`card-remove-${ticker}`}
-          className="btn btn-danger card-remove"
+          className="btn btn-danger card-rm-btn"
           onClick={() => onUnsubscribe(ticker)}
           disabled={unsubscribeLoading}
-          aria-label={`Remove ${ticker}`}
         >
-          {unsubscribeLoading
-            ? <span className="spinner" style={{ width: 12, height: 12 }} />
-            : "Remove"}
+          {unsubscribeLoading ? <span className="spinner" style={{ width: 10, height: 10 }} /> : "Remove"}
         </button>
       </div>
     </article>

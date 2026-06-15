@@ -4,11 +4,13 @@ import MarketOverview from "./MarketOverview.jsx";
 import StockSelector from "./StockSelector.jsx";
 import StockCard from "./StockCard.jsx";
 import EmptyState from "./EmptyState.jsx";
+import TickerStrip from "./TickerStrip.jsx";
+import Newsletter from "./Newsletter.jsx";
 import { fetchStocks, fetchSubscriptions, subscribeToStock, unsubscribeFromStock } from "../api.js";
 import { getSocket, connectSocket, disconnectSocket } from "../socket.js";
 import { addPricePoint, seedPriceHistory, clearPriceHistory } from "../utils/priceHistory.js";
 
-export default function Dashboard({ user, onLogout, addToast, theme, onToggleTheme }) {
+export default function Dashboard({ user, onLogout, addToast, theme, onToggleTheme, onOpenTutorial }) {
   const [stocks, setStocks] = useState([]);
   const [subscriptions, setSubscriptions] = useState([]);
   const [livePrices, setLivePrices] = useState({});
@@ -21,8 +23,7 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
   const subscriptionsRef = useRef(subscriptions);
   subscriptionsRef.current = subscriptions;
 
-  // ─── Initial data load ──────────────────────────────────────────────────────
-
+  // ── Initial data load ──────────────────────────────────────────────
   useEffect(() => {
     let mounted = true;
     async function load() {
@@ -35,9 +36,7 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
         setStocks(stockList);
         setSubscriptions(subs);
         stockList.forEach((s) => {
-          if (subs.includes(s.ticker)) {
-            seedPriceHistory(s.ticker, s.currentPrice || s.basePrice);
-          }
+          if (subs.includes(s.ticker)) seedPriceHistory(s.ticker, s.currentPrice || s.basePrice);
         });
       } catch (err) {
         if (!mounted) return;
@@ -50,8 +49,7 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
     return () => { mounted = false; };
   }, [user.email]);
 
-  // ─── Socket.IO ──────────────────────────────────────────────────────────────
-
+  // ── Socket.IO ──────────────────────────────────────────────────────
   useEffect(() => {
     const socket = getSocket();
     socketRef.current = socket;
@@ -62,9 +60,8 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
     };
     const onDisconnect = (reason) => {
       setConnectionStatus("disconnected");
-      if (reason !== "io client disconnect") {
-        addToast("warning", "Disconnected", "Connection lost. Reconnecting…");
-      }
+      if (reason !== "io client disconnect")
+        addToast("warning", "Connection lost", "Reconnecting…");
     };
     const onConnectError = () => setConnectionStatus("disconnected");
     const onReconnectAttempt = () => setConnectionStatus("connecting");
@@ -86,7 +83,6 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
     socket.on("reconnect_attempt", onReconnectAttempt);
     socket.on("stock:update", onStockUpdate);
     socket.on("subscription:updated", onSubscriptionUpdated);
-
     connectSocket(user.email);
 
     return () => {
@@ -99,18 +95,11 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
     };
   }, [user.email, addToast]);
 
-  // ─── Logout ─────────────────────────────────────────────────────────────────
-
-  const handleLogout = useCallback(() => {
-    disconnectSocket();
-    onLogout();
-  }, [onLogout]);
-
-  // ─── Subscribe ──────────────────────────────────────────────────────────────
+  const handleLogout = useCallback(() => { disconnectSocket(); onLogout(); }, [onLogout]);
 
   const handleSubscribe = useCallback(async (ticker) => {
     if (subscriptionsRef.current.includes(ticker)) {
-      addToast("warning", "Already watching", `${ticker} is already in your watchlist.`);
+      addToast("warning", "Already watching", `${ticker} is in your watchlist.`);
       return;
     }
     setLoadingTicker(ticker);
@@ -119,18 +108,12 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
       setSubscriptions(updatedSubs);
       const stock = stocks.find((s) => s.ticker === ticker);
       if (stock) seedPriceHistory(ticker, stock.currentPrice || stock.basePrice);
-      if (socketRef.current?.connected) {
-        socketRef.current.emit("joinUser", { email: user.email });
-      }
+      socketRef.current?.emit("joinUser", { email: user.email });
       addToast("success", "Watching", `${ticker} added to your watchlist.`);
     } catch (err) {
       addToast("error", "Failed", err.message);
-    } finally {
-      setLoadingTicker(null);
-    }
+    } finally { setLoadingTicker(null); }
   }, [user.email, stocks, addToast]);
-
-  // ─── Unsubscribe ────────────────────────────────────────────────────────────
 
   const handleUnsubscribe = useCallback(async (ticker) => {
     setUnsubLoadingTicker(ticker);
@@ -142,21 +125,14 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
       addToast("info", "Removed", `${ticker} removed from your watchlist.`);
     } catch (err) {
       addToast("error", "Failed", err.message);
-    } finally {
-      setUnsubLoadingTicker(null);
-    }
+    } finally { setUnsubLoadingTicker(null); }
   }, [user.email, addToast]);
-
-  // ─── Loading screen ──────────────────────────────────────────────────────────
 
   if (pageLoading) {
     return (
-      <div style={{
-        display: "flex", alignItems: "center", justifyContent: "center",
-        height: "100vh", flexDirection: "column", gap: 14,
-      }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", flexDirection: "column", gap: 14 }}>
         <span className="spinner" style={{ width: 28, height: 28, borderWidth: 2.5 }} />
-        <span style={{ fontSize: "0.875rem", color: "var(--text-2)" }}>Loading dashboard…</span>
+        <span style={{ fontSize: "0.875rem", color: "var(--text-2)" }}>Loading Artha…</span>
       </div>
     );
   }
@@ -169,18 +145,24 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
         onLogout={handleLogout}
         theme={theme}
         onToggleTheme={onToggleTheme}
+        onOpenTutorial={onOpenTutorial}
       />
+
+      {/* Scrolling market ticker */}
+      {stocks.length > 0 && <TickerStrip stocks={stocks} />}
 
       <main className="dashboard" role="main">
         {/* Disclaimer */}
         <div className="disclaimer">
-          <strong>Note:</strong> All prices are simulated for assignment/demo purposes only. Not real market data.
+          <strong>Simulated data only.</strong> All prices are generated algorithmically for demonstration purposes. This is not real market data.
         </div>
 
-        <div className="dashboard-grid">
+        {/* Main grid */}
+        <div className="dash-grid">
           {/* Left column */}
           <div className="left-col">
             <MarketOverview
+              stocks={stocks}
               subscriptionCount={subscriptions.length}
               connectionStatus={connectionStatus}
             />
@@ -193,13 +175,13 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
             />
           </div>
 
-          {/* Right column — live stock cards */}
+          {/* Right column — live cards */}
           <div>
-            <div className="cards-section-header">
-              <span className="cards-section-title">Live Watchlist</span>
+            <div className="cards-header">
+              <span className="section-title">Live Watchlist</span>
               <span className="cards-count">
                 {subscriptions.length > 0
-                  ? `${subscriptions.length} stock${subscriptions.length !== 1 ? "s" : ""}`
+                  ? `${subscriptions.length} stock${subscriptions.length !== 1 ? "s" : ""} tracked`
                   : "No stocks tracked"}
               </span>
             </div>
@@ -216,8 +198,9 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
                     ticker,
                     name: stockInfo.name,
                     sector: stockInfo.sector,
+                    exchange: stockInfo.exchange,
+                    currency: stockInfo.currency,
                     price: stockInfo.currentPrice || stockInfo.basePrice,
-                    previousPrice: stockInfo.currentPrice || stockInfo.basePrice,
                     change: 0,
                     changePercent: 0,
                     direction: "flat",
@@ -237,6 +220,9 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
             )}
           </div>
         </div>
+
+        {/* Newsletter */}
+        <Newsletter />
       </main>
     </>
   );
