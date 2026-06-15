@@ -20,6 +20,9 @@ router.get("/", (req, res) => {
         ticker: stock.ticker,
         name: stock.name,
         sector: stock.sector,
+        exchange: stock.exchange,
+        currency: stock.currency,
+        flag: stock.flag,
         basePrice: stock.basePrice,
         currentPrice: priceData ? priceData.price : stock.basePrice,
       };
