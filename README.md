@@ -1,46 +1,80 @@
-# Artha — The Mathematics of Markets
+# Artha — The Mathematics of Markets 📈
 
-Artha is a real-time, simulated stock trading and portfolio dashboard designed to demonstrate full-stack architecture, WebSocket integration, and modern frontend design principles. 
+**Live Deployment:** [https://artha-dashboard-sigma.vercel.app](https://artha-dashboard-sigma.vercel.app)  
+**Backend API:** [https://artha-dashboard-5vac.onrender.com](https://artha-dashboard-5vac.onrender.com)
 
-This project tracks live algorithmic prices for 10 stocks across NASDAQ (USD) and NSE (INR) and includes a paper-trading module for simulating market executions.
+Artha is a premium, real-time simulated stock trading platform and dashboard. Designed specifically to demonstrate scalable full-stack architecture, it tracks live algorithmic prices for 10 stocks across the **NASDAQ (USD)** and **NSE (INR)** markets. 
 
-## Features
+The application utilizes **WebSockets (Socket.IO)** to stream real-time price updates while maintaining strict multi-user isolation through dedicated socket rooms.
 
-- Real-Time Price Engine: Algorithmic random-walk simulation running at 1-second intervals.
-- Multi-User Isolation: WebSocket rooms ensure users only receive data for their subscribed watchlists.
-- Paper Trading Portfolio: Simulated $100,000 portfolio to practice buying and selling tracked assets.
-- Live Market Ticker: Memoized, infinite-scrolling ticker component updating in real-time.
-- Responsive Design System: Clean, professional interface with native Dark/Light mode support.
+---
 
-## Project Structure
+## ✨ Core Features & Technical Highlights
 
-The project is split into two independent modules:
-- `/backend`: Node.js, Express, and Socket.IO (Manages price algorithms and WebSocket rooms).
-- `/frontend`: React and Vite (Manages UI, state, and WebSocket client connections).
+### 1. Real-Time Algorithmic Price Engine
+- **Sub-second Updates:** Prices update every 1 second without any page refreshes.
+- **Random Walk Simulation:** Custom mean-reversion algorithm creates realistic stock price movements based on calculated volatility metrics for each individual asset.
 
-## Local Development Setup
+### 2. Multi-User WebSocket Isolation
+- **Room-Based Subscriptions:** The backend maintains isolated `Socket.IO` rooms for every connected user based on their login email. 
+- **Concurrent Integrity:** Multiple users can log in simultaneously (e.g., across different browsers or tabs) and will solely receive data for the specific stocks they have subscribed to, ensuring zero data leakage.
 
-To run this application locally, you must start both the backend and frontend servers.
+### 3. Paper Trading Portfolio Module
+- **Mock Trading Engine:** Users are granted a simulated $100,000 balance to practice executing buy and sell orders.
+- **Real-Time P&L:** The system automatically calculates Average Cost Basis, Unrealized Profit/Loss, and overall Portfolio Value instantaneously as the live ticker feed updates.
 
-1. Install Dependencies:
-   Navigate to the root directory and install all packages:
-   npm install
+### 4. Advanced Frontend Architecture (React + Vite)
+- **Component Memoization:** Heavy components like the infinite-scrolling Market Ticker are optimized using `React.memo` to prevent unnecessary re-renders and eliminate UI jank/flickering when users modify their subscriptions.
+- **State Management:** Clean separation of global UI state (Dark Mode, Tutorial Overlays, Active Tabs) and persistent data (LocalStorage for theme and newsletter preferences).
+- **Responsive Design System:** Completely custom CSS implementation utilizing CSS Variables for seamless light/dark mode transitions. Completely free of external bloated UI libraries.
 
-2. Start the Application:
-   Run the root dev script to start both the backend and frontend concurrently:
-   npm run dev
+---
 
-3. Access the Dashboard:
-   Open your browser and navigate to: http://localhost:5173
+## 🏗️ System Architecture
 
-## Deployment Architecture
+The project is structured as a decoupled monorepo containing two discrete applications:
 
-- Backend (API & WebSockets): Deploy the `/backend` directory to a platform that supports long-lived WebSocket connections (e.g., Render, Railway).
-- Frontend (UI): Deploy the `/frontend` directory to Vercel or Netlify. Ensure that the API base URL and Socket.IO client in the frontend code are updated to point to your deployed backend URL.
+### Backend (`/backend`)
+- **Environment:** Node.js, Express
+- **Real-time Server:** `Socket.IO`
+- **Responsibilities:** Maintains the state of all 10 tracked assets, runs the 1-second interval price simulation, processes user login events, manages user-specific watchlists, and broadcasts delta payloads over WebSockets.
+- **Deployment:** Hosted on **Render.com** to support continuous, long-lived WebSocket connections.
 
-## Contact & Information
+### Frontend (`/frontend`)
+- **Environment:** React, Vite
+- **Responsibilities:** Manages the client-side Socket.IO lifecycle, renders the real-time UI, orchestrates the Paper Trading mock execution, and provides an onboarding tutorial.
+- **Deployment:** Hosted on **Vercel** as a high-performance static site connecting to the Render API.
 
-Designed and developed by Shriniwas Maheshwari.
+---
 
-- Portfolio: http://shriniwas.net
-- Email: shrini2412@gmail.com
+## 💻 Local Development Setup
+
+To evaluate or run this application locally on your machine, you must run both the backend and frontend servers simultaneously.
+
+**1. Clone the repository and install dependencies:**
+```bash
+git clone https://github.com/shriniwas2412/artha-dashboard.git
+cd artha-dashboard
+npm install
+```
+
+**2. Start the Application:**
+This command uses `concurrently` to boot both the Vite dev server and the Node backend at the same time:
+```bash
+npm run dev
+```
+
+**3. Access the Dashboard:**
+Open your browser and navigate to: [http://localhost:5173](http://localhost:5173)
+
+*(For testing multi-user isolation, open a standard browser window and an Incognito window side-by-side, and log in with two different email addresses).*
+
+---
+
+## 📬 Contact & Information
+
+Designed, architected, and developed by **Shriniwas Maheshwari** as a demonstration of production-ready full-stack engineering and product design.
+
+- **Portfolio:** [http://shriniwas.net](http://shriniwas.net)
+- **Email:** [shrini2412@gmail.com](mailto:shrini2412@gmail.com)
+- **GitHub:** [shriniwas2412](https://github.com/shriniwas2412)
