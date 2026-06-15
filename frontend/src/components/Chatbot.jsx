@@ -40,7 +40,7 @@ export default function Chatbot() {
     setTimeout(() => {
       let reply = "I am a demo assistant. You can ask me about 'Artha', 'markets', or 'features'.";
       if (query.includes("artha") || query.includes("meaning")) {
-        reply = "Artha (अर्थ) is a Sanskrit word meaning wealth, purpose, and prosperity. It signifies that markets and wealth generation have a deeper meaning!";
+        reply = "Artha is a Sanskrit word meaning wealth, purpose, and prosperity. It signifies that markets and wealth generation have a deeper meaning!";
       } else if (query.includes("market") || query.includes("stock")) {
         reply = "This dashboard tracks 10 stocks across NASDAQ (USD) and NSE (INR). Prices update algorithmically every second.";
       } else if (query.includes("feature")) {

@@ -2,7 +2,9 @@
   "users": [
     {
       "email": "user1@example.com",
-      "subscriptions": []
+      "subscriptions": [
+        "GOOG"
+      ]
     }
   ]
 }

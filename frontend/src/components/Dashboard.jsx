@@ -191,7 +191,7 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
                 <div className="artha-meaning-card fade-up">
                   <div className="artha-meaning-title"><InfoIcon /> Meaning of Artha</div>
                   <div className="artha-meaning-text">
-                    <strong>अर्थ (artha)</strong> is one of the four aims of human life in Indian philosophy. It implies wealth, purpose, and prosperity. 
+                    <strong>Artha</strong> is one of the four aims of human life in Indian philosophy. It implies wealth, purpose, and prosperity. 
                     <br/><br/>
                     Markets aren't just numbers; they represent human endeavor and the pursuit of meaning. Use this dashboard to discover the true mathematics of markets!
                   </div>
