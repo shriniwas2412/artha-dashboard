@@ -1,4 +1,4 @@
-# Artha — The Mathematics of Markets 📈
+# Artha — The Mathematics of Markets
 
 **Live Deployment:** [https://artha-dashboard-sigma.vercel.app](https://artha-dashboard-sigma.vercel.app)  
 **Backend API:** [https://artha-dashboard-5vac.onrender.com](https://artha-dashboard-5vac.onrender.com)
@@ -9,7 +9,7 @@ The application utilizes **WebSockets (Socket.IO)** to stream real-time price up
 
 ---
 
-## ✨ Core Features & Technical Highlights
+## Core Features & Technical Highlights
 
 ### 1. Real-Time Algorithmic Price Engine
 - **Sub-second Updates:** Prices update every 1 second without any page refreshes.
@@ -30,7 +30,7 @@ The application utilizes **WebSockets (Socket.IO)** to stream real-time price up
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 The project is structured as a decoupled monorepo containing two discrete applications:
 
@@ -47,7 +47,7 @@ The project is structured as a decoupled monorepo containing two discrete applic
 
 ---
 
-## 💻 Local Development Setup
+## Local Development Setup
 
 To evaluate or run this application locally on your machine, you must run both the backend and frontend servers simultaneously.
 
@@ -71,7 +71,7 @@ Open your browser and navigate to: [http://localhost:5173](http://localhost:5173
 
 ---
 
-## 📬 Contact & Information
+## Contact & Information
 
 Designed, architected, and developed by **Shriniwas Maheshwari** as a demonstration of production-ready full-stack engineering and product design.
 
