@@ -759,6 +759,25 @@ a { color: var(--accent); text-decoration: none; }
   .port-grid { grid-template-columns: 1fr; }
 }
 
+/* ================================================================
+   HEADER COOL ADDITIONS
+   ================================================================ */
+.live-pulse {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 10px; font-size: 0.55rem;
+  font-weight: 700; letter-spacing: 0.05em; color: var(--text-2);
+}
+.pulse-dot {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--green);
+  animation: radarPulse 2s infinite;
+}
+@keyframes radarPulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
 
 
 /* Flash animations — border only, no background change */

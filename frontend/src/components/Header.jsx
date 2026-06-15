@@ -29,6 +29,12 @@ const HelpIcon = () => (
 
 export default function Header({ user, connectionStatus, onLogout, theme, onToggleTheme, onOpenTutorial, currentTab, setCurrentTab }) {
   const avatarLetter = user?.email ? user.email[0].toUpperCase() : "U";
+  
+  const hour = new Date().getHours();
+  let greeting = "Good evening";
+  if (hour < 12) greeting = "Good morning";
+  else if (hour < 18) greeting = "Good afternoon";
+
   return (
     <header className="header" role="banner">
       <div style={{ display: "flex", alignItems: "center" }}>
@@ -36,7 +42,12 @@ export default function Header({ user, connectionStatus, onLogout, theme, onTogg
           <div className="header-mark"><ChartLineIcon /></div>
           <div>
             <div className="header-name">Artha</div>
-            <div className="header-sub">The Mathematics of Markets</div>
+            <div className="header-sub" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              The Mathematics of Markets
+              <span className="live-pulse">
+                <span className="pulse-dot"></span> LIVE
+              </span>
+            </div>
           </div>
         </div>
 
@@ -53,7 +64,10 @@ export default function Header({ user, connectionStatus, onLogout, theme, onTogg
 
         <div className="header-user" title={user?.email}>
           <div className="header-avatar">{avatarLetter}</div>
-          <span className="header-email">{user?.email}</span>
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <span style={{ fontSize: "0.6rem", color: "var(--text-3)", lineHeight: 1, fontWeight: 600, textTransform: "uppercase" }}>{greeting}</span>
+            <span className="header-email" style={{ lineHeight: 1, marginTop: "2px" }}>{user?.email}</span>
+          </div>
         </div>
 
         <button
