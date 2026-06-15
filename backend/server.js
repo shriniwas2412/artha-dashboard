@@ -19,12 +19,13 @@ const { findUser } = require("./services/userService");
 
 const app = express();
 const httpServer = http.createServer(app);
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 
 // ─── CORS Configuration ──────────────────────────────────────────────────────
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:5174",
   "http://localhost:3000",
   process.env.CLIENT_URL,
 ].filter(Boolean);
