@@ -6,9 +6,12 @@ import StockCard from "./StockCard.jsx";
 import EmptyState from "./EmptyState.jsx";
 import TickerStrip from "./TickerStrip.jsx";
 import Newsletter from "./Newsletter.jsx";
+import Portfolio from "./Portfolio.jsx";
 import { fetchStocks, fetchSubscriptions, subscribeToStock, unsubscribeFromStock } from "../api.js";
 import { getSocket, connectSocket, disconnectSocket } from "../socket.js";
 import { addPricePoint, seedPriceHistory, clearPriceHistory } from "../utils/priceHistory.js";
+
+const MemoizedTickerStrip = React.memo(TickerStrip);
 
 const InfoIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -157,19 +160,11 @@ export default function Dashboard({ user, onLogout, addToast, theme, onToggleThe
       />
 
       {currentTab === "portfolio" ? (
-        <main className="dashboard" role="main">
-          <div className="cards-header">
-            <span className="section-title">Your Portfolio (Mock)</span>
-          </div>
-          <div className="empty-state">
-            <h3>Portfolio features coming soon</h3>
-            <p>This section will allow you to execute trades and manage your holdings.</p>
-          </div>
-        </main>
+        <Portfolio stocks={stocks} livePrices={livePrices} addToast={addToast} />
       ) : (
         <>
           {/* Scrolling market ticker */}
-          {stocks.length > 0 && <TickerStrip stocks={stocks} />}
+          {stocks.length > 0 && <MemoizedTickerStrip stocks={stocks} />}
 
           <main className="dashboard" role="main">
             {/* Disclaimer */}

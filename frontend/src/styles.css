@@ -705,6 +705,61 @@ a { color: var(--accent); text-decoration: none; }
 .artha-meaning-title { font-size: 0.9375rem; font-weight: 700; color: var(--text-1); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
 .artha-meaning-text { font-size: 0.8125rem; color: var(--text-2); line-height: 1.6; }
 
+/* ================================================================
+   PORTFOLIO STYLES
+   ================================================================ */
+.portfolio-page { padding: 24px; max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+.port-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+.port-header-left { flex: 1; }
+.port-title { font-size: 1.5rem; font-weight: 800; color: var(--text-1); display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.port-sub { font-size: 0.9375rem; color: var(--text-2); }
+.port-balance-card { background: var(--surface); border: 1px solid var(--border); padding: 16px 24px; border-radius: var(--r-lg); min-width: 260px; }
+.port-bal-label { font-size: 0.8125rem; color: var(--text-3); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 4px; }
+.port-bal-val { font-size: 2rem; font-weight: 800; color: var(--text-1); line-height: 1; margin-bottom: 6px; }
+.port-bal-pl { font-size: 0.875rem; font-weight: 600; }
+
+.port-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
+.port-section { padding: 20px; }
+
+.holding-row { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid var(--border); transition: background var(--t); }
+.holding-row:last-child { border-bottom: none; }
+.holding-row:hover { background: var(--surface-2); border-radius: var(--r-sm); }
+.h-left, .h-mid { display: flex; flex-direction: column; gap: 2px; }
+.h-ticker { font-weight: 700; color: var(--text-1); }
+.h-qty { font-size: 0.75rem; color: var(--text-3); }
+.h-val { font-weight: 600; color: var(--text-1); text-align: right; }
+.h-pl { font-size: 0.75rem; text-align: right; font-weight: 600; }
+
+.trade-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.trade-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-md); transition: border-color var(--t); }
+.trade-row:hover { border-color: var(--border-hover); }
+.t-ticker { font-weight: 700; font-size: 0.875rem; color: var(--text-1); }
+.t-name { font-size: 0.75rem; color: var(--text-2); max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-price { font-weight: 700; color: var(--text-1); margin-right: 16px; }
+.t-actions { display: flex; gap: 6px; }
+.t-actions .btn { padding: 5px 12px; font-size: 0.75rem; }
+
+.port-side-header { font-size: 0.9375rem; font-weight: 700; color: var(--text-1); display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.hist-list { display: flex; flex-direction: column; gap: 10px; }
+.hist-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.8125rem; }
+.hist-type { padding: 2px 6px; border-radius: var(--r-xs); font-weight: 700; font-size: 0.65rem; letter-spacing: 0.05em; }
+.hist-type.buy { background: var(--green-soft); color: var(--green); }
+.hist-type.sell { background: var(--red-soft); color: var(--red); }
+.hist-mid { flex: 1; margin: 0 12px; }
+.hist-ticker { font-weight: 600; color: var(--text-1); }
+.hist-time { font-size: 0.7rem; color: var(--text-3); }
+.hist-price { font-weight: 600; color: var(--text-2); }
+
+.api-config-card { margin-top: 24px; }
+.api-select { display: flex; flex-direction: column; gap: 8px; font-size: 0.8125rem; color: var(--text-1); }
+.api-select label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.api-select label.muted { color: var(--text-3); cursor: not-allowed; }
+
+@media (max-width: 1024px) {
+  .port-grid { grid-template-columns: 1fr; }
+}
+
+
 
 /* Flash animations — border only, no background change */
 .stock-card.flash-up   { animation: fl-up .3s ease; }
